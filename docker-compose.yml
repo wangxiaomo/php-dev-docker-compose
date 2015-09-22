@@ -1,0 +1,37 @@
+redis:
+  build: ./env/redis
+  ports:
+    - "6379:6379"
+  volumes:
+    - /home/wangxiaomo/code/dev/redis:/data
+    - /home/wangxiaomo/code/dev/log/redis:/var/log/redis
+
+mysql:
+  build: ./env/mysql
+  ports:
+    - "3306:3306"
+  volumes:
+    - /home/wangxiaomo/code/dev/database:/var/lib/mysql
+    - /home/wangxiaomo/code/dev/log/mysql:/var/log/mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: 123456
+
+php-fpm:
+  build: ./env/php-fpm
+  ports:
+    - "9000:9000"
+  links:
+    - "redis"
+    - "mysql"
+  volumes:
+    - /home/wangxiaomo/code/dev/app:/var/www/html
+
+nginx:
+  build: ./env/nginx
+  ports:
+    - "80:80"
+  links:
+    - "php-fpm"
+  volumes:
+    - /home/wangxiaomo/code/dev/app:/var/www/html
+    - /home/wangxiaomo/code/dev/log/nginx:/var/log/nginx
